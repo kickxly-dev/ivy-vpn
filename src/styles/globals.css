@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #0a0a0f;
+  --color-bg-card: rgba(139, 92, 246, 0.06);
+  --color-border: rgba(139, 92, 246, 0.18);
+  --color-purple-dim: #6d28d9;
+  --color-purple-main: #8b5cf6;
+  --color-purple-vivid: #a855f7;
+  --color-purple-glow: rgba(168, 85, 247, 0.35);
+  --color-text-primary: #f5f3ff;
+  --color-text-muted: rgba(196, 181, 253, 0.6);
+  --color-connected: #34d399;
+  --color-connecting: #fbbf24;
+  --color-disconnected: rgba(156, 163, 175, 0.5);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: var(--color-text-primary);
+}
+
+/* Ambient glow behind connect button */
+.ambient-glow {
+  background: radial-gradient(
+    ellipse 280px 280px at 50% 48%,
+    rgba(139, 92, 246, 0.13) 0%,
+    transparent 70%
+  );
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 2px;
+}

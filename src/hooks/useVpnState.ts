@@ -1,11 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { StatusResponse, isConnected } from "../types";
+import { AppStatus, isConnected } from "../types";
 
-const defaultStatus: StatusResponse = {
+const defaultStatus: AppStatus = {
   status: "Disconnected",
-  serverName: null,
+  serverId: null,
   publicIp: null,
   connectedAt: null,
   rxBytes: 0,
@@ -13,48 +12,34 @@ const defaultStatus: StatusResponse = {
 };
 
 export function useVpnState() {
-  const [status, setStatus] = useState<StatusResponse>(defaultStatus);
+  const [appStatus, setAppStatus] = useState<AppStatus>(defaultStatus);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const refresh = useCallback(async () => {
     try {
-      const s = await invoke<StatusResponse>("get_status");
-      setStatus(s);
-    } catch (e) {
-      console.error("get_status failed", e);
-    }
+      const s = await invoke<AppStatus>("get_status");
+      setAppStatus(s);
+    } catch {}
   }, []);
 
-  // Poll every 2s while connected
   useEffect(() => {
-    if (isConnected(status.status)) {
-      pollRef.current = setInterval(refresh, 2000);
+    if (isConnected(appStatus.status)) {
+      pollRef.current = setInterval(refresh, 3000);
     } else {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
     }
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
-    };
-  }, [status.status, refresh]);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [appStatus.status, refresh]);
 
-  // Initial load
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useEffect(() => { refresh(); }, [refresh]);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (serverId: string) => {
     setLoading(true);
     setError(null);
     try {
-      await invoke("connect_vpn");
+      await invoke("connect_vpn", { serverId });
       await refresh();
     } catch (e) {
       setError(String(e));
@@ -76,21 +61,5 @@ export function useVpnState() {
     }
   }, [refresh]);
 
-  const importConfig = useCallback(async () => {
-    setError(null);
-    try {
-      const path = await open({
-        multiple: false,
-        filters: [{ name: "WireGuard Config", extensions: ["conf"] }],
-      });
-      if (!path) return;
-
-      await invoke("import_config", { path });
-      await refresh();
-    } catch (e) {
-      setError(String(e));
-    }
-  }, [refresh]);
-
-  return { status, loading, error, connect, disconnect, importConfig };
+  return { appStatus, loading, error, connect, disconnect };
 }

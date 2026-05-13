@@ -35,8 +35,7 @@
       "icons/icon.ico"
     ],
     "externalBin": [
-      "binaries/wg",
-      "binaries/wireguard"
+      "binaries/openvpn"
     ],
     "windows": {
       "nsis": {

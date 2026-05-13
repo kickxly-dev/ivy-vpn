@@ -8,11 +8,11 @@
     "core:window:allow-start-dragging",
     "core:window:allow-close",
     "core:window:allow-minimize",
-    "dialog:allow-open",
     "shell:allow-execute",
     "shell:allow-open",
-    "fs:allow-read-files",
-    "fs:allow-write-files",
+    "shell:allow-spawn",
+    "fs:read-files",
+    "fs:write-files",
     "process:allow-restart"
   ]
 }
